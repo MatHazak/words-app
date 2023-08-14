@@ -23,13 +23,12 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.example.wordsapp.utils.LetterListener
 
 
 /**
  * Adapter for the [RecyclerView] in [MainActivity].
  */
-class LetterAdapter(private val letterListener: LetterListener) :
+class LetterAdapter(private val letterListener: (String) -> Unit) :
     RecyclerView.Adapter<LetterAdapter.LetterViewHolder>() {
 
     // Generates a [CharRange] from 'A' to 'Z' and converts it to a list
@@ -57,7 +56,7 @@ class LetterAdapter(private val letterListener: LetterListener) :
 
         return LetterViewHolder(layout).also { viewHolder ->
                 viewHolder.button.setOnClickListener {
-                    letterListener.onLetterClickListener(list[viewHolder.layoutPosition].toString())
+                    letterListener(list[viewHolder.layoutPosition].toString())
             }
         }
     }

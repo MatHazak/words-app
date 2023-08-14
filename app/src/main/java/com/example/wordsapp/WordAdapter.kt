@@ -24,12 +24,11 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.example.wordsapp.utils.WordListener
 
 /**
- * Adapter for the [RecyclerView] in [DetailActivity].
+ * Adapter for the [RecyclerView] in [WordListFragment].
  */
-class WordAdapter(private val letterId: String, context: Context, private val wordListener: WordListener) :
+class WordAdapter(private val letterId: String, context: Context, private val wordListener: (String) -> Unit) :
     RecyclerView.Adapter<WordAdapter.WordViewHolder>() {
 
     private val filteredWords: List<String>
@@ -70,7 +69,7 @@ class WordAdapter(private val letterId: String, context: Context, private val wo
 
         return WordViewHolder(layout).also { viewHolder ->
             viewHolder.button.setOnClickListener {
-                wordListener.onWordListener(filteredWords[viewHolder.layoutPosition])
+                wordListener(filteredWords[viewHolder.layoutPosition])
             }
         }
     }
