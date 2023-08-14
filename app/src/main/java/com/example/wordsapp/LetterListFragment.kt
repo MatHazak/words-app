@@ -1,7 +1,6 @@
 package com.example.wordsapp
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -9,29 +8,28 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wordsapp.databinding.FragmentLetterListBinding
 
-class LetterListFragment : Fragment() {
+class LetterListFragment : Fragment(), MenuProvider {
 
     private var _binding: FragmentLetterListBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
     private var isLinearLayoutManager = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLetterListBinding.inflate(inflater, container, false)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         return binding.root
     }
 
@@ -40,25 +38,23 @@ class LetterListFragment : Fragment() {
         chooseLayout()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.layout_menu, menu)
         val layoutButton = menu.findItem(R.id.action_switch_layout)
         setIcon(layoutButton)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+    override fun onMenuItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
             R.id.action_switch_layout -> {
                 isLinearLayoutManager = !isLinearLayoutManager
                 chooseLayout()
                 setIcon(item)
-
-                return true
+                true
             }
 
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
-    }
 
     private fun chooseLayout() {
         if (isLinearLayoutManager) {
@@ -67,7 +63,8 @@ class LetterListFragment : Fragment() {
             recyclerView.layoutManager = GridLayoutManager(context, 4)
         }
         recyclerView.adapter = LetterAdapter { letter ->
-            val action = LetterListFragmentDirections.actionLetterListFragmentToWordListFragment(letter = letter)
+            val action =
+                LetterListFragmentDirections.actionLetterListFragmentToWordListFragment(letter = letter)
             findNavController().navigate(action)
         }
     }
